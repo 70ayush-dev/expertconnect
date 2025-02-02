@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role'
     ];
 
     /**
@@ -45,4 +46,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function expert() {
+        return $this->hasOne(Expert::class);
+    }
+    
+    public function bookings() {
+        return $this->hasMany(Booking::class);
+    }
+
+    
 }
