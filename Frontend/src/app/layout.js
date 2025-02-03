@@ -1,6 +1,7 @@
 import { Nunito } from "next/font/google";
 import "@/app/global.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import Navigation from "@/components/Navigation";
 
 const nunitoFont = Nunito({
     subsets: ["latin"],
@@ -19,9 +20,17 @@ const RootLayout = ({ children }) => {
                     attribute="class"
                     defaultTheme="system"
                     enableSystem
-                    disableTransitionOnChange
                 >
-                    {children}
+                    <div className="relative flex min-h-svh flex-col bg-background">
+                        <div className='border-grid flex flex-1 flex-col'>
+                            <header className="border-grid sticky top-0 z-50 w-full">
+                                <Navigation />
+                            </header>
+                            <main>
+                                {children}
+                            </main>
+                        </div>
+                    </div>
                 </ThemeProvider>
             </body>
         </html>

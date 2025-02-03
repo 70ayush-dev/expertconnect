@@ -25,10 +25,10 @@ interface User {
     isAdmin?: boolean;
 }
 
-const Navigation = ({ user }: { user: User }) => {
+const Navigation = () => {
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
 
     const navigation = [
         { name: 'Home', href: '/', icon: Home },
@@ -42,7 +42,7 @@ const Navigation = ({ user }: { user: User }) => {
     }
 
     return (
-        <nav className="sticky border-b top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <nav className="sticky border-b top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/50">
             <div className="container flex h-14 items-center">
                 <div className="mr-4 hidden md:flex">
                     <Link href="/" className="mr-6 flex items-center space-x-2">
