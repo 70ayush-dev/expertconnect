@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, User, MessageSquare, Users, Home, LayoutDashboard, Shield } from 'lucide-react';
 import ApplicationLogo from '@/components/ApplicationLogo';
@@ -17,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/auth'
+import { ProgressBarLink } from "@/components/ProgressBar";
 
 
 interface User {
@@ -45,17 +45,17 @@ const Navigation = () => {
         <nav className="sticky border-b top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/50">
             <div className="container flex h-14 items-center">
                 <div className="mr-4 hidden md:flex">
-                    <Link href="/" className="mr-6 flex items-center space-x-2">
+                    <ProgressBarLink href="/" className="mr-6 flex items-center space-x-2">
                         <ApplicationLogo className="h-8 w-8" />
                         <span className="hidden font-bold sm:inline-block">
                             YourApp
                         </span>
-                    </Link>
+                    </ProgressBarLink>
                     <div className="flex space-x-6 text-sm font-medium">
                         {navigation.map((item) => {
                             const Icon = item.icon;
                             return (
-                                <Link
+                                <ProgressBarLink
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
@@ -65,7 +65,7 @@ const Navigation = () => {
                                 >
                                     <Icon className="h-4 w-4" />
                                     <span>{item.name}</span>
-                                </Link>
+                                </ProgressBarLink>
                             );
                         })}
                     </div>
@@ -106,7 +106,7 @@ const Navigation = () => {
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem asChild>
-                                        <Link href="/profile">Profile</Link>
+                                        <ProgressBarLink href="/profile">Profile</ProgressBarLink>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={logout}>
                                         Log out
@@ -114,9 +114,9 @@ const Navigation = () => {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         ) : (
-                            <Link href="/login">
+                            <ProgressBarLink href="/login">
                                 <Button variant="outline">Log in</Button>
-                            </Link>
+                            </ProgressBarLink>
                         )}
 
                     </div>
@@ -130,7 +130,7 @@ const Navigation = () => {
                         {navigation.map((item) => {
                             const Icon = item.icon;
                             return (
-                                <Link
+                                <ProgressBarLink
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
@@ -141,7 +141,7 @@ const Navigation = () => {
                                 >
                                     <Icon className="h-4 w-4" />
                                     <span>{item.name}</span>
-                                </Link>
+                                </ProgressBarLink>
                             );
                         })}
                     </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,16 +11,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export default function SearchFilters() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const debounceTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
-    // Function to update search params
+    // Updated function to include debouncing
     const updateSearchParams = useCallback((key: string, value: string | number) => {
-        const params = new URLSearchParams(searchParams.toString());
-        if (value) {
-            params.set(key, String(value));
-        } else {
-            params.delete(key);
+        if (debounceTimer.current) {
+            clearTimeout(debounceTimer.current);
         }
-        router.push(`?${params.toString()}`);
+
+        debounceTimer.current = setTimeout(() => {
+            const params = new URLSearchParams(searchParams.toString());
+            if (value) {
+                params.set(key, String(value));
+            } else {
+                params.delete(key);
+            }
+            const newUrl = `${window.location.pathname}?${params.toString()}`;
+            if (key === "hourly_min"){
+                console.log(key)
+                console.log(value)
+            }
+            router.push(newUrl, { scroll: false });
+        }, 300); // 300ms delay
     }, [router, searchParams]);
 
     return (
@@ -31,6 +43,12 @@ export default function SearchFilters() {
 
                 {/* Experience Level */}
                 <div>
+                    <Label>Name</Label>
+                    <Input
+                        defaultValue={searchParams.get("name") || ""}
+                        onChange={(e) => updateSearchParams("name", e.target.value)}
+                    />
+                    
                     <Label>Experience Level</Label>
                     <Select
                         defaultValue={searchParams.get("experience") || ""}

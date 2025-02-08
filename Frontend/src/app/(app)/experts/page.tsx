@@ -1,31 +1,41 @@
-
 import { Suspense } from 'react'
 import LoadingGrid from './components/LoadingGrid'
 import ExpertGrid from './components/ExpertGrid'
-import PageHeader from './components/PageHeader'
-import SearchFilters from './components/SearchFilters'
+import { unstable_cache } from 'next/cache';
+import axios from "@/lib/axios"
 
-import axios from '@/lib/axios'
 
-async function getExperts() {
-    const { data } = await axios.get('/experts')
-    return data
+async function fetchExperts() {
+    try {
+        const { data } = await axios.get("/experts")
+        return data
+    } catch (error) {
+        console.error("Error fetching experts:", error)
+        return []
+    }
 }
+
+const getCachedExperts = unstable_cache(
+    async () => fetchExperts(),
+    ['experts'],
+    {
+        revalidate: 60, // Cache for 60 seconds
+        tags: ['experts']
+    }
+);
+
+
 
 export default async function ExpertsPage() {
-    const experts = await getExperts()
+    const experts = await getCachedExperts();
 
     return (
-        <div className="relative min-h-screen w-full bg-background p-6 md:p-8">
-            <PageHeader />
-            <div className="mx-auto max-w-7xl">
-                <Suspense fallback={<LoadingGrid />}>
-                    <div className="grid gap-6 lg:grid-cols-[300px_1fr] lg:gap-8">
-                        <SearchFilters />
-                        <ExpertGrid experts={experts} />
-                    </div>
-                </Suspense>
+        <Suspense fallback={<LoadingGrid />}>
+            <div className="">
+                <ExpertGrid initialExperts={experts} />
             </div>
-        </div>
+        </Suspense>
     )
 }
+
+export const revalidate = 60 // revalidate page every 60 seconds
