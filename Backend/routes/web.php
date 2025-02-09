@@ -9,20 +9,6 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReviewController;
 use App\Mail\TestMail;
 
-Route::get('/', function () {
-    return ['Laravel' => app()->version()];
-});
-
-
-Route::get('/send-test-mail', function () {
-    Mail::to('admin@ayusht3.in')->send(new TestMail('Ayush'));
-    return 'Test email has been sent!';
-});
-
-Route::get('/listusers', function () {
-    return App\Models\User::all();
-});
-
 // User Routes
 Route::get('/users', [UserController::class, 'index']);
 Route::post('/users', [UserController::class, 'store']);
