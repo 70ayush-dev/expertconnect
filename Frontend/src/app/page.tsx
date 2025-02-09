@@ -1,11 +1,8 @@
-import Navigation from '@/components/Navigation'
-
-
 const Home = () => {
     return (
         <>
             <div className="relative flex min-h-svh flex-col bg-background">
-                <Navigation user={null}/>
+                <h1>Home page</h1>
             </div>
         </>
     )
