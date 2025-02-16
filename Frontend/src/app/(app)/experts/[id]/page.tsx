@@ -20,7 +20,6 @@ interface Expert {
         name: string
         email: string
     }
-    // Added fields (mock data for now)
     rating: number
     reviews_count: number
     availability: string[]

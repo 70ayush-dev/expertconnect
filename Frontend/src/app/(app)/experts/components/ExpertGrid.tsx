@@ -5,8 +5,6 @@ import { useSearchParams } from "next/navigation"
 import axios from "@/lib/axios"
 import ExpertCard from "./ExpertCard"
 import LoadingGrid from "./LoadingGrid"
-import { motion, useScroll, useTransform } from "framer-motion"
-import { ScrollReveal } from "@/components/animations/ScrollReveal"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, SlidersHorizontal, X } from "lucide-react"
@@ -29,8 +27,6 @@ export default function ExpertGrid({ initialExperts }: { initialExperts: Expert[
     const [loading, setLoading] = useState(false)
     const [showFilters, setShowFilters] = useState(false)
     const searchParams = useSearchParams()
-    const { scrollYProgress } = useScroll();
-    const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
     useEffect(() => {
         async function fetchExperts() {
@@ -56,22 +52,19 @@ export default function ExpertGrid({ initialExperts }: { initialExperts: Expert[
     return (
         <div className="relative">
             {/* Hero Section */}
-            <motion.div 
-                style={{ opacity }}
-                className="relative h-48 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent -mx-6 -mt-6 px-6 pt-6"
-            >
+            <div className="hero-section relative h-48 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent -mx-6  px-6 pt-6">
                 <div className="absolute inset-0 bg-grid-white/10" />
-                <div className="relative mx-auto max-w-7xl mt-5">
+                <div className="relative max-w-2xl animate-fade-in">
                     <h1 className="text-4xl font-bold mb-4">Find Your Expert</h1>
                     <p className="text-lg text-muted-foreground">
                         Connect with industry-leading professionals ready to help you succeed.
                     </p>
                 </div>
-            </motion.div>
+            </div>
 
             <div className="mx-auto max-w-7xl">
                 {/* Search and Filters */}
-                <div className="sticky top-[72px] bg-background/80 backdrop-blur-sm z-10 -mx-6 px-6 py-4 border-b">
+                <div className="sticky top-[56px] bg-background/80 backdrop-blur-sm z-10 -mx-6 px-6 py-4 border-b">
                     <div className="flex gap-4 items-center">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -92,10 +85,10 @@ export default function ExpertGrid({ initialExperts }: { initialExperts: Expert[
                     </div>
 
                     {/* Expandable Filters */}
-                    <motion.div
-                        initial={false}
-                        animate={{ height: showFilters ? "auto" : 0 }}
-                        className="overflow-hidden"
+                    <div
+                        className={`overflow-hidden transition-all duration-300 ${
+                            showFilters ? 'h-auto opacity-100' : 'h-0 opacity-0'
+                        }`}
                     >
                         <div className="py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
@@ -111,7 +104,7 @@ export default function ExpertGrid({ initialExperts }: { initialExperts: Expert[
                                 {/* Add filter components */}
                             </div>
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
 
                 {/* Results Count & Sort */}
@@ -132,9 +125,11 @@ export default function ExpertGrid({ initialExperts }: { initialExperts: Expert[
                 ) : (
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {experts.map((expert, index) => (
-                            <ScrollReveal key={expert.id} delay={index * 0.1}>
-                                <ExpertCard expert={expert} index={index} />
-                            </ScrollReveal>
+                            <ExpertCard 
+                                key={expert.id} 
+                                expert={expert} 
+                                index={index}
+                            />
                         ))}
                     </div>
                 )}

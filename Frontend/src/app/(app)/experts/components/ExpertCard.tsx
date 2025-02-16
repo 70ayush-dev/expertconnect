@@ -1,12 +1,11 @@
 "use client"
 
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Clock, DollarSign, Star, MessageSquare } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ProgressBarLink } from "@/components/ProgressBar";
-import { motion, useInView, useMotionTemplate, useMotionValue } from 'framer-motion';
 import { Badge } from "@/components/ui/badge";
+import { ProgressBarLink } from "@/components/ProgressBar";
 
 interface Expert {
     id: number
@@ -22,52 +21,54 @@ interface Expert {
 }
 
 interface ExpertCardProps {
-    expert: Expert
+    expert: Expert;
+    index: number;
 }
 
-const ExpertCard = ({ expert, index }: ExpertCardProps & { index: number }) => {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-60px" });
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
+const ExpertCard = ({ expert, index }: ExpertCardProps) => {
+    const cardRef = useRef<HTMLDivElement>(null);
+    const rafRef = useRef<number | undefined>();
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        const { currentTarget, clientX, clientY } = e;
-        const { left, top } = currentTarget.getBoundingClientRect();
-        mouseX.set(clientX - left);
-        mouseY.set(clientY - top);
-    };
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (!cardRef.current) return;
+        
+        const rect = cardRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-    const background = useMotionTemplate`
-        radial-gradient(
-            400px circle at ${mouseX}px ${mouseY}px,
-            hsl(var(--primary) / 0.04),
-            transparent 40%
-        )
-    `;
+        if (rafRef.current) {
+            cancelAnimationFrame(rafRef.current);
+        }
+
+        rafRef.current = requestAnimationFrame(() => {
+            if (cardRef.current) {
+                cardRef.current.style.setProperty('--mouse-x', `${x}px`);
+                cardRef.current.style.setProperty('--mouse-y', `${y}px`);
+            }
+        });
+    }, []);
+
+    React.useEffect(() => {
+        document.addEventListener('mousemove', handleMouseMove);
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            if (rafRef.current) {
+                cancelAnimationFrame(rafRef.current);
+            }
+        };
+    }, [handleMouseMove]);
 
     return (
-        <motion.div
-            ref={ref}
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{
-                duration: 0.4,
-                delay: index * 0.1,
-                ease: [0.21, 0.47, 0.32, 0.98]
+        <div 
+            ref={cardRef}
+            className="expert-card scroll-animate"
+            style={{ 
+                animationDelay: `${index * 100}ms`,
+                viewTransitionName: `expert-card-${expert.id}`
             }}
-            className="h-full"
-            onMouseMove={handleMouseMove}
         >
-            <ProgressBarLink href={`/experts/${expert.id}`} className="block h-full">
-                <Card className="relative h-full bg-card/50 backdrop-blur-sm rounded-lg overflow-hidden group">
-                    <motion.div
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        style={{ background }}
-                    />
-                    <motion.div
-                        className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/1 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    />
+            <ProgressBarLink href={`/experts/${expert.id}`}>
+                <Card className="relative h-full bg-card/50 backdrop-blur-sm border-none rounded-lg overflow-hidden shadow-none">
                     <CardHeader className="space-y-4 relative">
                         <div className="flex items-start justify-between">
                             <Avatar className="h-16 w-16 border-2 border-background">
@@ -105,8 +106,8 @@ const ExpertCard = ({ expert, index }: ExpertCardProps & { index: number }) => {
                     </CardContent>
                 </Card>
             </ProgressBarLink>
-        </motion.div>
+        </div>
     );
 };
 
-export default ExpertCard;
+export default React.memo(ExpertCard);

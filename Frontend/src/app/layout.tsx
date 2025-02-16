@@ -30,7 +30,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
                                         <header className="border-grid sticky top-0 z-50 w-full">
                                             <Navigation />
                                         </header>
-                                        <main>
+                                        <main className="container">
                                             {children}
                                         </main>
                                     </div>
